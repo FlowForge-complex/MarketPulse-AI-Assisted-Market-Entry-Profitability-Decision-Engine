@@ -1,0 +1,16 @@
+city,competitor,presence,delivery_time,category_count,reported_users,reported_aov,reported_city_count,source,source_date
+Bengaluru,Blinkit,True,15,25,1744393,514,30,Public Filings,2026-08-01
+Bengaluru,Zepto,True,20,25,712613,511,30,Public Filings,2026-08-01
+Bengaluru,Swiggy Instamart,True,10,25,1081840,535,30,Public Filings,2026-08-01
+Mumbai,Blinkit,True,20,25,517174,492,30,Public Filings,2026-08-01
+Mumbai,Zepto,True,20,25,653906,506,30,Public Filings,2026-08-01
+Mumbai,Swiggy Instamart,True,15,25,1198848,480,30,Public Filings,2026-08-01
+Delhi NCR,Blinkit,True,15,25,918646,571,30,Public Filings,2026-08-01
+Delhi NCR,Zepto,True,10,25,947803,571,30,Public Filings,2026-08-01
+Delhi NCR,Swiggy Instamart,True,20,25,1710637,529,30,Public Filings,2026-08-01
+Hyderabad,Blinkit,True,10,25,692147,410,30,Public Filings,2026-08-01
+Hyderabad,Zepto,True,15,25,1424996,477,30,Public Filings,2026-08-01
+Hyderabad,Swiggy Instamart,True,20,25,1323384,556,30,Public Filings,2026-08-01
+Pune,Blinkit,True,10,25,1191615,504,30,Public Filings,2026-08-01
+Pune,Zepto,True,20,25,1517778,586,30,Public Filings,2026-08-01
+Pune,Swiggy Instamart,True,15,25,1730065,520,30,Public Filings,2026-08-01
