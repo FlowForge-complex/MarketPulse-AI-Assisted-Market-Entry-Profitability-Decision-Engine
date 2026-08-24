@@ -34,7 +34,7 @@ except Exception as e:
     st.stop()
 
 # Header
-st.title("📊 MarketPulse Strategic Dashboard")
+st.title("MarketPulse Strategic Dashboard")
 st.markdown("**Market Entry & Profitability Decision Engine**")
 st.divider()
 
