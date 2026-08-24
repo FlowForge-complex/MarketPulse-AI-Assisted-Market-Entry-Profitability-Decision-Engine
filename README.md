@@ -1,5 +1,7 @@
 # MarketPulse: AI-Assisted Market Entry & Profitability Decision Engine
 
+![MarketPulse Executive Dashboard](screenshots/dashboard.png)
+
 ## Problem
 A fictional quick-commerce company wants to expand into India. Management asks: Which city should we enter first, which customer segment should we target, what pricing strategy should we use, and under what conditions will the expansion become profitable?
 
@@ -65,7 +67,7 @@ An end-to-end consulting analytics engine that evaluates Indian city market-entr
                 └──────┬───────┘
                        ↓
               ┌─────────────────┐
-              │    Power BI     │
+              │    Streamlit    │
               │    Dashboard    │
               └────────┬────────┘
                        ↓
@@ -106,8 +108,8 @@ Bottom-up TAM estimator comparing derived results against external benchmarks.
 ## AI Explanation Layer
 LLM API implementation that restricts the model to *explaining* deterministic outputs, eliminating hallucinations.
 
-## Power BI Dashboard
-Decision-oriented dashboards covering KPIs, Customers, Pricing, and Scenarios.
+## Streamlit Web Dashboard
+Decision-oriented interactive dashboards covering KPIs, Customers, Pricing, and Scenarios built in pure Python.
 
 ## Results
 (To be updated based on final execution of model).
