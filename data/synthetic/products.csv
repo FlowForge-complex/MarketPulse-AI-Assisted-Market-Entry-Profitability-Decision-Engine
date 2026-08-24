@@ -1,0 +1,101 @@
+product_id,category,subcategory,product_name,unit_cost,selling_price
+1,Electronics,Electronics Item,Electronics Product 1,1139,1315
+2,Personal Care,Personal Care Item,Personal Care Product 2,167,225
+3,Beverages,Beverages Item,Beverages Product 3,69,89
+4,Beverages,Beverages Item,Beverages Product 4,96,134
+5,Snacks,Snacks Item,Snacks Product 5,27,30
+6,Beverages,Beverages Item,Beverages Product 6,125,176
+7,Grocery,Grocery Item,Grocery Product 7,58,82
+8,Electronics,Electronics Item,Electronics Product 8,1025,1255
+9,Grocery,Grocery Item,Grocery Product 9,172,215
+10,Personal Care,Personal Care Item,Personal Care Product 10,122,158
+11,Personal Care,Personal Care Item,Personal Care Product 11,169,249
+12,Personal Care,Personal Care Item,Personal Care Product 12,112,125
+13,Beverages,Beverages Item,Beverages Product 13,74,81
+14,Snacks,Snacks Item,Snacks Product 14,93,121
+15,Electronics,Electronics Item,Electronics Product 15,1243,1736
+16,Grocery,Grocery Item,Grocery Product 16,62,83
+17,Beverages,Beverages Item,Beverages Product 17,30,39
+18,Personal Care,Personal Care Item,Personal Care Product 18,119,159
+19,Personal Care,Personal Care Item,Personal Care Product 19,345,489
+20,Personal Care,Personal Care Item,Personal Care Product 20,419,540
+21,Beverages,Beverages Item,Beverages Product 21,46,64
+22,Snacks,Snacks Item,Snacks Product 22,76,84
+23,Snacks,Snacks Item,Snacks Product 23,38,42
+24,Snacks,Snacks Item,Snacks Product 24,45,51
+25,Beverages,Beverages Item,Beverages Product 25,110,154
+26,Electronics,Electronics Item,Electronics Product 26,1554,2276
+27,Snacks,Snacks Item,Snacks Product 27,64,87
+28,Grocery,Grocery Item,Grocery Product 28,74,94
+29,Grocery,Grocery Item,Grocery Product 29,189,262
+30,Grocery,Grocery Item,Grocery Product 30,65,90
+31,Snacks,Snacks Item,Snacks Product 31,26,31
+32,Electronics,Electronics Item,Electronics Product 32,562,718
+33,Electronics,Electronics Item,Electronics Product 33,1965,2515
+34,Beverages,Beverages Item,Beverages Product 34,119,171
+35,Electronics,Electronics Item,Electronics Product 35,1988,2838
+36,Snacks,Snacks Item,Snacks Product 36,34,48
+37,Beverages,Beverages Item,Beverages Product 37,124,165
+38,Grocery,Grocery Item,Grocery Product 38,98,138
+39,Electronics,Electronics Item,Electronics Product 39,765,842
+40,Electronics,Electronics Item,Electronics Product 40,1972,2727
+41,Personal Care,Personal Care Item,Personal Care Product 41,327,384
+42,Personal Care,Personal Care Item,Personal Care Product 42,229,282
+43,Grocery,Grocery Item,Grocery Product 43,136,151
+44,Beverages,Beverages Item,Beverages Product 44,53,77
+45,Beverages,Beverages Item,Beverages Product 45,140,158
+46,Grocery,Grocery Item,Grocery Product 46,104,153
+47,Snacks,Snacks Item,Snacks Product 47,53,77
+48,Snacks,Snacks Item,Snacks Product 48,50,74
+49,Personal Care,Personal Care Item,Personal Care Product 49,438,498
+50,Beverages,Beverages Item,Beverages Product 50,117,130
+51,Electronics,Electronics Item,Electronics Product 51,1223,1637
+52,Grocery,Grocery Item,Grocery Product 52,169,220
+53,Personal Care,Personal Care Item,Personal Care Product 53,150,210
+54,Personal Care,Personal Care Item,Personal Care Product 54,321,392
+55,Electronics,Electronics Item,Electronics Product 55,862,1121
+56,Electronics,Electronics Item,Electronics Product 56,1949,2722
+57,Beverages,Beverages Item,Beverages Product 57,61,68
+58,Grocery,Grocery Item,Grocery Product 58,126,159
+59,Grocery,Grocery Item,Grocery Product 59,179,200
+60,Grocery,Grocery Item,Grocery Product 60,192,262
+61,Grocery,Grocery Item,Grocery Product 61,106,141
+62,Personal Care,Personal Care Item,Personal Care Product 62,159,207
+63,Beverages,Beverages Item,Beverages Product 63,118,139
+64,Snacks,Snacks Item,Snacks Product 64,45,54
+65,Beverages,Beverages Item,Beverages Product 65,45,61
+66,Electronics,Electronics Item,Electronics Product 66,1349,1774
+67,Grocery,Grocery Item,Grocery Product 67,60,86
+68,Grocery,Grocery Item,Grocery Product 68,180,252
+69,Personal Care,Personal Care Item,Personal Care Product 69,323,384
+70,Personal Care,Personal Care Item,Personal Care Product 70,228,323
+71,Snacks,Snacks Item,Snacks Product 71,87,129
+72,Beverages,Beverages Item,Beverages Product 72,81,108
+73,Beverages,Beverages Item,Beverages Product 73,39,56
+74,Personal Care,Personal Care Item,Personal Care Product 74,348,466
+75,Grocery,Grocery Item,Grocery Product 75,169,236
+76,Snacks,Snacks Item,Snacks Product 76,31,34
+77,Electronics,Electronics Item,Electronics Product 77,1533,1884
+78,Electronics,Electronics Item,Electronics Product 78,1870,2698
+79,Personal Care,Personal Care Item,Personal Care Product 79,126,179
+80,Electronics,Electronics Item,Electronics Product 80,642,868
+81,Snacks,Snacks Item,Snacks Product 81,37,42
+82,Grocery,Grocery Item,Grocery Product 82,120,140
+83,Personal Care,Personal Care Item,Personal Care Product 83,411,612
+84,Electronics,Electronics Item,Electronics Product 84,1271,1738
+85,Snacks,Snacks Item,Snacks Product 85,42,59
+86,Personal Care,Personal Care Item,Personal Care Product 86,259,313
+87,Snacks,Snacks Item,Snacks Product 87,68,91
+88,Personal Care,Personal Care Item,Personal Care Product 88,320,459
+89,Beverages,Beverages Item,Beverages Product 89,67,96
+90,Beverages,Beverages Item,Beverages Product 90,122,143
+91,Snacks,Snacks Item,Snacks Product 91,79,116
+92,Snacks,Snacks Item,Snacks Product 92,24,26
+93,Beverages,Beverages Item,Beverages Product 93,71,102
+94,Snacks,Snacks Item,Snacks Product 94,52,59
+95,Beverages,Beverages Item,Beverages Product 95,134,176
+96,Personal Care,Personal Care Item,Personal Care Product 96,173,255
+97,Electronics,Electronics Item,Electronics Product 97,1703,1910
+98,Electronics,Electronics Item,Electronics Product 98,1980,2907
+99,Electronics,Electronics Item,Electronics Product 99,1327,1839
+100,Beverages,Beverages Item,Beverages Product 100,73,103
