@@ -1,6 +1,7 @@
 # MarketPulse: AI-Assisted Market Entry & Profitability Decision Engine
 
 ![MarketPulse Executive Dashboard](screenshots/dashboard.png)
+![MarketPulse AI Recommendation](screenshots/dashboard_ai.png)
 
 ## Problem
 A fictional quick-commerce company wants to expand into India. Management asks: Which city should we enter first, which customer segment should we target, what pricing strategy should we use, and under what conditions will the expansion become profitable?
