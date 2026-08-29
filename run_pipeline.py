@@ -165,9 +165,7 @@ def run_full_pipeline(
             print("\n" + rec_result["explanation"] + "\n")
         except Exception:
             safe_text = (
-                rec_result["explanation"]
-                .encode("ascii", "replace")
-                .decode("ascii")
+                rec_result["explanation"].encode("ascii", "replace").decode("ascii")
             )
             print("\n" + safe_text + "\n")
 

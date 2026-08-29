@@ -59,7 +59,7 @@ total_customers = len(customers)
 col1.metric("Total Markets Analyzed", len(cities))
 col2.metric("Total Customers", f"{total_customers:,}")
 col3.metric("Total Orders", f"{total_orders:,}")
-col4.metric("Est. Base Revenue", f"₹{total_revenue:,.0f}")
+col4.metric("Est. Base Revenue", f"INR {total_revenue:,.0f}")
 
 st.divider()
 
@@ -112,5 +112,5 @@ st.subheader("Strategic Recommendation Output")
 st.success("""
 **Primary Directive:** Enter **Bengaluru** first using the Medium Pricing strategy.
 * Expected break-even occurs in Month 18 under the base case.
-* Re-evaluate expansion if CAC exceeds ₹350 or organic retention drops below 35%.
+* Re-evaluate expansion if CAC exceeds INR 350 or organic retention drops below 35%.
 """)
