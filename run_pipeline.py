@@ -16,7 +16,7 @@ import json
 import os
 import sys
 import time
-from typing import Any, Dict
+from typing import Any, Dict, List
 
 # UTF-8 terminal encoding guard for Windows platforms
 if hasattr(sys.stdout, "reconfigure"):
@@ -59,7 +59,7 @@ def run_full_pipeline(
     start_time = time.perf_counter()
     logger.info("Starting MarketPulse Decision Engine Pipeline...")
 
-    artifacts = []
+    artifacts: List[str] = []
 
     # 1. Exploratory Data Analysis
     eda_summary = run_eda(config)
@@ -165,7 +165,9 @@ def run_full_pipeline(
             print("\n" + rec_result["explanation"] + "\n")
         except Exception:
             safe_text = (
-                rec_result["explanation"].encode("ascii", "replace").decode("ascii")
+                rec_result["explanation"]
+                .encode("ascii", "replace")
+                .decode("ascii")
             )
             print("\n" + safe_text + "\n")
 

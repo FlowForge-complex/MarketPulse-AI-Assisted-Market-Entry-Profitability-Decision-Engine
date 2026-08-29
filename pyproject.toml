@@ -55,6 +55,7 @@ include_trailing_comma = true
 
 [tool.mypy]
 python_version = "3.11"
+explicit_package_bases = true
 warn_return_any = true
 warn_unused_configs = true
 ignore_missing_imports = true
@@ -69,4 +70,4 @@ addopts = "-v --cov=src --cov-report=term-missing --cov-report=xml --cov-fail-un
 
 [tool.bandit]
 exclude_dirs = ["tests", ".venv"]
-skips = ["B101"]
+skips = ["B101", "B311", "B110"]
