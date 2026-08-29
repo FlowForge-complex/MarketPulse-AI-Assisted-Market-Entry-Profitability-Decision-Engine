@@ -18,12 +18,12 @@ if hasattr(sys.stdout, "reconfigure"):
 # Sensitive token detection regex patterns for secret redaction
 _SENSITIVE_PATTERNS: List[re.Pattern[str]] = [
     re.compile(
-        r"(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*['\"]?([a-zA-Z0-9_\-\.]{8,})['\"]?"
+        r"(?i)(api[_-]?key|secret|token|password)\s*[:=]\s*['\"]?([a-zA-Z0-9_\-\.]{6,})['\"]?"
     ),
-    re.compile(r"AIzaSy[a-zA-Z0-9_\-]{33}"),  # Google/Gemini API Key
-    re.compile(r"sk-[a-zA-Z0-9]{32,}"),  # OpenAI API Key
-    re.compile(r"ghp_[a-zA-Z0-9]{36}"),  # GitHub Personal Access Token
-    re.compile(r"Bearer\s+[a-zA-Z0-9_\-\.]{15,}"),
+    re.compile(r"AIzaSy[a-zA-Z0-9_\-]{20,}"),  # Google/Gemini API Key
+    re.compile(r"sk-[a-zA-Z0-9_\-]{20,}"),  # OpenAI API Key
+    re.compile(r"ghp_[a-zA-Z0-9]{25,}"),  # GitHub Personal Access Token
+    re.compile(r"Bearer\s+[a-zA-Z0-9_\-\.]{10,}"),
 ]
 
 
