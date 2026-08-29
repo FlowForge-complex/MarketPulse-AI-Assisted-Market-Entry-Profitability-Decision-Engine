@@ -1,0 +1,74 @@
+{
+    "_meta": {
+        "hash": {
+            "sha256": "4b82d38e2193b2a5ef1261d76395b009e5ee935d2524a872659132fae1781298"
+        },
+        "pipfile-spec": 6,
+        "requires": {
+            "python_version": "3.11"
+        },
+        "sources": [
+            {
+                "name": "pypi",
+                "url": "https://pypi.org/simple",
+                "verify_ssl": true
+            }
+        ]
+    },
+    "default": {
+        "pandas": {
+            "hashes": [],
+            "version": "==2.2.3"
+        },
+        "numpy": {
+            "hashes": [],
+            "version": "==2.2.1"
+        },
+        "pydantic": {
+            "hashes": [],
+            "version": "==2.8.2"
+        },
+        "streamlit": {
+            "hashes": [],
+            "version": "==1.48.0"
+        },
+        "plotly": {
+            "hashes": [],
+            "version": "==6.9.0"
+        },
+        "pyyaml": {
+            "hashes": [],
+            "version": "==6.0.2"
+        }
+    },
+    "develop": {
+        "pytest": {
+            "hashes": [],
+            "version": "==8.3.2"
+        },
+        "pytest-cov": {
+            "hashes": [],
+            "version": "==5.0.0"
+        },
+        "black": {
+            "hashes": [],
+            "version": "==24.4.2"
+        },
+        "flake8": {
+            "hashes": [],
+            "version": "==7.1.0"
+        },
+        "mypy": {
+            "hashes": [],
+            "version": "==1.11.0"
+        },
+        "bandit": {
+            "hashes": [],
+            "version": "==1.7.9"
+        },
+        "pip-audit": {
+            "hashes": [],
+            "version": "==2.7.3"
+        }
+    }
+}
