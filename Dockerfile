@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1
-FROM python:3.11-slim as base
+FROM python:3.11-slim AS base
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -23,6 +23,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 # Copy repository source code
 COPY . .
+
+# Install package in editable mode
+RUN pip install --no-cache-dir -e .
 
 # Create non-root application user for security
 RUN useradd -m -u 1000 appuser && \
