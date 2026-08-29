@@ -1,0 +1,40 @@
+{
+  "metadata": {
+    "pipeline_version": "1.1.0",
+    "execution_status": "SUCCESS",
+    "execution_time_seconds": 0.2134,
+    "random_seed": 42
+  },
+  "evaluation_metrics": {
+    "top_ranked_city": "Bengaluru",
+    "composite_score": 77.5,
+    "estimated_tam_crores": 194.91,
+    "total_orders_analyzed": 5508,
+    "total_customers": 1000,
+    "gross_revenue_inr": 9061058.0,
+    "gross_margin_pct": 30.17,
+    "projected_break_even_month": 18
+  },
+  "top_city_breakdown": {
+    "city_id": 1,
+    "city": "Bengaluru",
+    "state": "Karnataka",
+    "population": 12500000,
+    "households": 3125000,
+    "population_density": 4381,
+    "urbanization": 100,
+    "mpce": 6500,
+    "internet_penetration": 75,
+    "economic_growth": 8.5,
+    "income_proxy": 850000,
+    "ecommerce_adoption": 22,
+    "market_size_score": 26.190476190476193,
+    "economic_growth_score": 100.0,
+    "demand_score": 63.85542168674698,
+    "competition_score": 100.0,
+    "cost_score": 53.84615384615385,
+    "income_score": 72.22222222222221,
+    "composite_score": 77.5,
+    "rank": 1
+  }
+}
