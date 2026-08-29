@@ -2,8 +2,9 @@
 
 [![CI Pipeline](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions/workflows/ci.yml/badge.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions)
 [![Docker Build](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions/workflows/docker-build.yml/badge.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions)
+[![Release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/releases)
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![Coverage](https://img.shields.io/badge/coverage-87.6%25-brightgreen.svg)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-90.4%25-brightgreen.svg)](tests/)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Security: Bandit](https://img.shields.io/badge/security-bandit-green.svg)](https://github.com/PyCQA/bandit)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -39,6 +40,11 @@ A rapidly expanding quick-commerce and consumer delivery enterprise seeks to sca
                      └───────────────────┬───────────────────┘
                                          ↓
                      ┌───────────────────────────────────────┐
+                     │     Pydantic Ingestion Boundary Gate  │
+                     │  (CityMetrics, Order & Customer Types)│
+                     └───────────────────┬───────────────────┘
+                                         ↓
+                     ┌───────────────────────────────────────┐
                      │       PostgreSQL Data Warehouse       │
                      │     (Relational Analytics Schema)     │
                      └───────────────────┬───────────────────┘
@@ -54,11 +60,17 @@ A rapidly expanding quick-commerce and consumer delivery enterprise seeks to sca
       │   MCDA City Scoring │ │   Scenario & Pricing│ │ Bottom-Up TAM Sizing│
       │  (Weighted Ranking) │ │ Sensitivity Engine  │ │  (Demographic Model)│
       └──────────┬──────────┘ └──────────┬──────────┘ └──────────┬──────────┘
+                 │                       │                       │
                  └───────────────────────┼───────────────────────┘
                                          ↓
                      ┌───────────────────────────────────────┐
+                     │     Ablation & Baseline Comparison    │
+                     │    (Uniform vs MCDA Sensitivity)      │
+                     └───────────────────┬───────────────────┘
+                                         ↓
+                     ┌───────────────────────────────────────┐
                      │     AI Strategic Explanation Layer    │
-                     │   (Deterministic Narrative Synthesis) │
+                     │  (Deterministic Offline + LLM Synth)  │
                      └───────────────────┬───────────────────┘
                                          ↓
                      ┌───────────────────────────────────────┐
@@ -86,62 +98,93 @@ A rapidly expanding quick-commerce and consumer delivery enterprise seeks to sca
 
 ---
 
-## 4. Quickstart & Installation
+## 4. Quickstart: Clean Clone to Execution
 
-### Option A: Local Python Environment
+The repository is built for **100% reproducible execution from a fresh clone** in under 60 seconds without requiring external API keys.
+
+### Step 1: Clone Repository
 ```bash
-# 1. Clone repository
 git clone https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine.git
 cd MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine
+```
 
-# 2. Install pinned dependencies
+### Step 2: Install Pinned Dependencies
+```bash
+# Install exact pinned dependencies from lockfile
 pip install -r requirements.lock.txt
+pip install -e .
+```
 
-# 3. Execute headless decision pipeline (generates benchmark artifacts)
-python run_pipeline.py --seed 42 --benchmark
+### Step 3: Run Full Test Suite & Coverage Gate
+```bash
+# Executes 46 unit & integration tests with >= 80% coverage enforcement
+python -m pytest tests/ -v --cov=src --cov-fail-under=80
+```
 
-# 4. Launch interactive dashboard
+### Step 4: Execute Headless Decision Pipeline (Offline)
+```bash
+# Runs complete deterministic pipeline and exports benchmark metrics
+python run_pipeline.py --seed 42 --benchmark --headless
+```
+
+### Step 5: Launch Interactive Decision Dashboard
+```bash
 streamlit run src/dashboard/app.py
 ```
 
-### Option B: Docker Compose (Isolated Environment)
+---
+
+## 5. Docker & Containerized Deployment
+
+### Launch Complete Stack with Docker Compose
 ```bash
-# Build and orchestrate PostgreSQL + Analytics Pipeline + Streamlit Dashboard
+# Orchestrates PostgreSQL + Analytics Engine + Streamlit Dashboard
 docker compose up --build
 ```
 Access the interactive dashboard at `http://localhost:8501`.
 
 ---
 
-## 5. Testing, Quality Assurance & Security Gates
+## 6. Testing, Quality Assurance & Security Architecture
 
-The repository maintains an **80%+ test coverage gate** enforced via GitHub Actions CI:
+The repository enforces strict quality standards wired directly into GitHub Actions CI:
 
 ```bash
-# Execute Pytest test suite with coverage enforcement
-python -m pytest tests/ -v --cov=src --cov-fail-under=80
-
-# Verify code formatting and linting
+# 1. Formatting & Import Ordering
 black --check src/ tests/ run_pipeline.py
 isort --check-only src/ tests/ run_pipeline.py
+
+# 2. Style & Lint Checks
 flake8 src/ tests/ run_pipeline.py
 
-# Static type checking
+# 3. Static Type Analysis
 python -m mypy --explicit-package-bases src/ tests/ run_pipeline.py
 
-# Static application security testing (AST)
+# 4. AST Security Scanning
 bandit -r src/ -s B101,B311,B110
+
+# 5. Dependency Vulnerability Auditing
+pip-audit --local
+
+# 6. Unit & Integration Test Suite (46 tests, 90.4% coverage)
+python -m pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=80
 ```
+
+### Security & Threat Model Highlights
+* **Secret Redaction Filter:** Integrated `SecretRedactionFilter` regex stream scanner in `src/core/logging_config.py` masking all API keys and tokens with `[REDACTED]`.
+* **Pydantic Ingestion Schemas:** All incoming CSVs are validated against strict Pydantic schemas (`CityMetricsSchema`, `OrderIngestSchema`, etc.) before processing.
+* **Keyless Isolation:** Pipeline operates 100% offline using deterministic narrative synthesis when `GEMINI_API_KEY` / `OPENAI_API_KEY` are unset.
+* **Non-Root Docker Execution:** Multi-stage `Dockerfile` runs as unprivileged user `appuser` (UID 1000).
 
 ---
 
-## 6. Repository Architecture
+## 7. Repository Architecture & File Mapping
 
 ```text
 MarketPulse/
 ├── .devcontainer/          # VS Code DevContainer development environment
 ├── .github/
-│   ├── workflows/          # Ultra-fast GitHub Actions CI/CD and Docker pipelines
+│   ├── workflows/          # GitHub Actions CI/CD (matrix test, lint, mypy, audit, docker)
 │   └── dependabot.yml      # Automated dependency vulnerability scanning
 ├── configs/                # Centralized YAML configuration files (default.yaml)
 ├── data/
@@ -161,12 +204,12 @@ MarketPulse/
 ├── src/
 │   ├── ai/                 # Deterministic AI explanation layer & prompts
 │   ├── analytics/          # EDA, RFM segmentation, cohort retention, profitability
-│   ├── core/               # Structured logging, typed dataclasses, configuration
+│   ├── core/               # Structured logging, health check, types, configuration
 │   ├── dashboard/          # Interactive Streamlit executive dashboard
 │   ├── data_generation/    # Reproducible customer, product, and order generators
-│   ├── decision_engine/    # Multi-criteria scoring, sensitivity, and pricing engines
+│   ├── decision_engine/    # Multi-criteria scoring, sensitivity, ablations, pricing
 │   └── guesstimation/      # Bottom-up TAM sizing model
-├── tests/                  # Pytest test suite (31 tests, 87.63% coverage)
+├── tests/                  # Pytest test suite (46 tests, 90.40% coverage)
 ├── .env.example            # Sample production environment variables
 ├── .flake8                 # Flake8 style configuration
 ├── .gitattributes          # Cross-platform LF line-ending normalization
@@ -175,15 +218,16 @@ MarketPulse/
 ├── CONTRIBUTING.md         # Developer contribution guidelines
 ├── Dockerfile              # Production multi-stage container definition
 ├── docker-compose.yml      # Multi-container orchestration
+├── Pipfile.lock            # Standard dependency lockfile
 ├── pyproject.toml          # Unified project & tooling configuration
 ├── requirements.txt        # Runtime and development dependency declarations
 ├── requirements.lock.txt   # Pinned dependency lockfile
 ├── run_pipeline.py         # Headless CLI pipeline runner
-└── SECURITY.md             # Security policy and threat modeling
+└── SECURITY.md             # Security policy and formal threat model
 ```
 
 ---
 
-## 7. License
+## 8. License
 
 This project is licensed under the [MIT License](LICENSE).
