@@ -1,7 +1,10 @@
 """Type definitions, validation schemas, and dataclasses for MarketPulse."""
 
 from dataclasses import asdict, dataclass, field
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Type
+
+import pandas as pd
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class MarketPulseError(Exception):
@@ -26,6 +29,131 @@ class ModelExecutionError(MarketPulseError):
     """Raised when an analytics model or decision engine encounters calculation errors."""
 
     pass
+
+
+# ==============================================================================
+# Pydantic Schemas for Ingestion Boundary Validation
+# ==============================================================================
+
+
+class CityMetricsSchema(BaseModel):
+    """Pydantic schema for validating city demographic and economic market data."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    city_id: int = Field(gt=0, description="Unique city identifier")
+    city: str = Field(min_length=1, description="City name")
+    state: str = Field(min_length=1, description="Indian State")
+    population: int = Field(gt=0, description="Metropolitan population")
+    households: int = Field(gt=0, description="Total households")
+    population_density: int = Field(gt=0, description="People per sq km")
+    urbanization: float = Field(ge=0.0, le=100.0, description="Urbanization %")
+    mpce: int = Field(gt=0, description="Monthly per-capita expenditure")
+    internet_penetration: float = Field(ge=0.0, le=100.0, description="Internet %")
+    economic_growth: float = Field(ge=-50.0, le=100.0, description="GDP Growth %")
+    income_proxy: int = Field(gt=0, description="Per capita income proxy")
+    ecommerce_adoption: float = Field(ge=0.0, le=100.0, description="eCommerce %")
+
+
+class CustomerIngestSchema(BaseModel):
+    """Pydantic schema for customer record ingestion validation."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    customer_id: int = Field(gt=0)
+    city_id: int = Field(gt=0)
+    signup_date: str = Field(min_length=8)
+    age_group: str = Field(min_length=2)
+    customer_segment: str = Field(min_length=2)
+
+
+class ProductIngestSchema(BaseModel):
+    """Pydantic schema for SKU product catalog validation."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    product_id: int = Field(gt=0)
+    category: str = Field(min_length=1)
+    subcategory: str = Field(min_length=1)
+    product_name: str = Field(min_length=1)
+    unit_cost: int = Field(ge=0)
+    selling_price: int = Field(ge=0)
+
+
+class OrderIngestSchema(BaseModel):
+    """Pydantic schema for customer order header validation."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    order_id: int = Field(gt=0)
+    customer_id: int = Field(gt=0)
+    city_id: int = Field(gt=0)
+    order_date: str = Field(min_length=8)
+    order_status: str = Field(min_length=2)
+    delivery_time: int = Field(ge=0)
+    discount: int = Field(ge=0)
+    delivery_fee: int = Field(ge=0)
+
+
+class OrderItemIngestSchema(BaseModel):
+    """Pydantic schema for order line-item SKU validation."""
+
+    model_config = ConfigDict(extra="ignore")
+
+    order_id: int = Field(gt=0)
+    product_id: int = Field(gt=0)
+    quantity: int = Field(gt=0)
+    unit_price: int = Field(ge=0)
+    cost: int = Field(ge=0)
+
+
+def validate_dataframe_schema(
+    df: pd.DataFrame,
+    schema_cls: Type[BaseModel],
+    sample_size: Optional[int] = 50,
+) -> bool:
+    """Validates DataFrame columns and sampled rows against a Pydantic schema model.
+
+    Args:
+        df: Input pandas DataFrame to validate.
+        schema_cls: Target Pydantic schema class.
+        sample_size: Number of sample rows to test (None for full scan).
+
+    Returns:
+        True if all rows pass validation.
+
+    Raises:
+        DataLoadError: If schema constraints or required fields are violated.
+    """
+    if df.empty:
+        raise DataLoadError("Cannot validate schema: DataFrame is empty.")
+
+    # Check required fields exist in columns
+    schema_fields = schema_cls.model_fields.keys()
+    missing_cols = set(schema_fields) - set(df.columns)
+    if missing_cols:
+        raise DataLoadError(
+            f"Schema validation failed: Missing required columns: {sorted(missing_cols)}"
+        )
+
+    # Validate rows against Pydantic model
+    sample_df = df if sample_size is None else df.head(sample_size)
+    records = sample_df.to_dict(orient="records")
+
+    for idx, row in enumerate(records):
+        try:
+            schema_cls(**row)
+        except Exception as exc:
+            raise DataLoadError(
+                f"Schema row validation failed at record index {idx}: {exc}"
+            ) from exc
+
+    return True
+
+
+# ==============================================================================
+# Domain Dataclasses
+# ==============================================================================
 
 
 @dataclass

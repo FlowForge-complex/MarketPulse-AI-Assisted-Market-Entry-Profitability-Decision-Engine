@@ -1,39 +1,77 @@
 """Exploratory Data Analysis (EDA) module for MarketPulse datasets."""
 
 import os
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Optional, Type
 
 import pandas as pd
+from pydantic import BaseModel
 
 from src.core.config import AppConfig, load_config
 from src.core.logging_config import get_logger
-from src.core.types import DataLoadError
+from src.core.types import (
+    CityMetricsSchema,
+    CustomerIngestSchema,
+    DataLoadError,
+    OrderIngestSchema,
+    OrderItemIngestSchema,
+    validate_dataframe_schema,
+)
 
 logger = get_logger(__name__)
 
+# Registry mapping default filename suffixes to their boundary validation schemas
+_SCHEMA_REGISTRY: Dict[str, Type[BaseModel]] = {
+    "city_market_metrics.csv": CityMetricsSchema,
+    "customers.csv": CustomerIngestSchema,
+    "orders.csv": OrderIngestSchema,
+    "order_items.csv": OrderItemIngestSchema,
+}
 
-def load_dataset(file_path: str) -> pd.DataFrame:
-    """Loads a CSV file into a pandas DataFrame with error handling.
+
+def load_dataset(
+    file_path: str,
+    schema: Optional[Type[BaseModel]] = None,
+    validate_schema: bool = True,
+) -> pd.DataFrame:
+    """Loads a CSV file into a pandas DataFrame with schema validation.
 
     Args:
         file_path: Absolute or relative path to CSV file.
+        schema: Optional Pydantic schema model to enforce. If None, auto-detected from filename.
+        validate_schema: Whether to validate rows/columns against target schema.
 
     Returns:
-        Loaded DataFrame.
+        Loaded and validated DataFrame.
 
     Raises:
-        DataLoadError: If file does not exist or parsing fails.
+        DataLoadError: If file does not exist, parsing fails, or schema validation fails.
     """
     if not os.path.exists(file_path):
         logger.error("Dataset not found at path: %s", file_path)
         raise DataLoadError(f"Dataset file not found: {file_path}")
+
     try:
         df = pd.read_csv(file_path)
         logger.debug("Successfully loaded %d rows from %s", len(df), file_path)
-        return df
     except Exception as exc:
         logger.exception("Failed to parse dataset at %s: %s", file_path, exc)
         raise DataLoadError(f"Error reading CSV {file_path}: {exc}") from exc
+
+    if validate_schema:
+        target_schema = schema
+        if target_schema is None:
+            base_name = os.path.basename(file_path)
+            target_schema = _SCHEMA_REGISTRY.get(base_name)
+
+        if target_schema is not None:
+            validate_dataframe_schema(df, target_schema)
+            logger.debug(
+                "Validated %s against schema %s",
+                file_path,
+                target_schema.__name__,
+            )
+
+    return df
 
 
 def run_eda(config: Optional[AppConfig] = None) -> Dict[str, Any]:
