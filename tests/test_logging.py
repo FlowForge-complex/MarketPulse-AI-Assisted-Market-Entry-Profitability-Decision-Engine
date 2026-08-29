@@ -5,6 +5,7 @@ import logging
 
 from src.core.logging_config import (
     JSONFormatter,
+    SecretRedactionFilter,
     TextFormatter,
     get_logger,
     setup_logging,
@@ -55,3 +56,36 @@ def test_get_logger_singleton():
     logger = get_logger("unit_test_component")
     assert isinstance(logger, logging.Logger)
     assert logger.name == "unit_test_component"
+
+
+def test_secret_redaction_filter():
+    """Validates that sensitive API keys and tokens are masked with [REDACTED]."""
+    filter_obj = SecretRedactionFilter()
+
+    # Test Google / Gemini API key redaction
+    rec = logging.LogRecord(
+        name="test",
+        level=logging.INFO,
+        pathname=__file__,
+        lineno=1,
+        msg="Connecting with key AIzaSyD98734ndskfjhsdf98342jklsdhf98",
+        args=(),
+        exc_info=None,
+    )
+    filter_obj.filter(rec)
+    assert "AIzaSy" not in str(rec.msg)
+    assert "[REDACTED]" in str(rec.msg)
+
+    # Test OpenAI API key redaction
+    rec2 = logging.LogRecord(
+        name="test",
+        level=logging.INFO,
+        pathname=__file__,
+        lineno=1,
+        msg="Using secret token sk-1234567890abcdef1234567890abcdef12345",
+        args=(),
+        exc_info=None,
+    )
+    filter_obj.filter(rec2)
+    assert "sk-" not in str(rec2.msg)
+    assert "[REDACTED]" in str(rec2.msg)
