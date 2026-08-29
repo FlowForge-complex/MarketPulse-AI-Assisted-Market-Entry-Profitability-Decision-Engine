@@ -1,0 +1,31 @@
+# MarketPulse System Configuration
+app_name: "MarketPulse: AI-Assisted Market Entry Decision Engine"
+version: "1.1.0"
+random_seed: 42
+log_level: "INFO"
+log_format: "text"
+
+# Strategy & Economic Thresholds
+cac_threshold_inr: 350
+target_margin_threshold_pct: 0.12
+default_scenario: "balanced"
+
+# Multi-Criteria Decision Analysis Weights (Must sum to 1.0)
+scoring_weights:
+  market_size: 0.25
+  economic_growth: 0.20
+  demand_index: 0.20
+  competition_inverse: 0.15
+  cost_efficiency: 0.10
+  income_level: 0.10
+
+# Guesstimation Baseline Parameters
+guesstimation:
+  bengaluru:
+    population: 12500000
+    household_size: 4.0
+    internet_penetration: 0.75
+    ecommerce_adoption: 0.22
+    category_share: 0.35
+    orders_per_month: 2.0
+    average_order_value: 450.0
