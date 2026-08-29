@@ -1,6 +1,7 @@
 """Unit tests for AI Explanation Layer payload assembly and narrative synthesis."""
 
 import json
+import os
 
 from src.ai.metrics_payload import (
     build_recommendation_payload,
@@ -48,3 +49,20 @@ def test_run_recommendation_layer():
     assert "payload" in res
     assert "explanation" in res
     assert "prompt_template" in res
+
+
+def test_offline_keyless_execution():
+    """Validates keyless offline execution when all API keys are unset."""
+    original_gemini = os.environ.pop("GEMINI_API_KEY", None)
+    original_openai = os.environ.pop("OPENAI_API_KEY", None)
+
+    try:
+        res = run_recommendation_layer()
+        assert "explanation" in res
+        assert "PRIMARY DIRECTIVE" in res["explanation"]
+        assert "BENGALURU" in res["explanation"]
+    finally:
+        if original_gemini:
+            os.environ["GEMINI_API_KEY"] = original_gemini
+        if original_openai:
+            os.environ["OPENAI_API_KEY"] = original_openai
