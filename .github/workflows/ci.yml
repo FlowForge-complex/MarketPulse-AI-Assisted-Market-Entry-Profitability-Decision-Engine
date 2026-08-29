@@ -1,0 +1,116 @@
+name: CI Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  # Job 1: Code Formatting and Style Linting
+  lint:
+    name: Lint & Code Style
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Linting Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install black isort flake8
+
+      - name: Run Black Formatter Check
+        run: black --check src/ tests/
+
+      - name: Run isort Import Sorting Check
+        run: isort --check-only src/ tests/
+
+      - name: Run Flake8 Style Linter
+        run: flake8 src/ tests/
+
+  # Job 2: Static Type Checking
+  typecheck:
+    name: Static Type Checking (mypy)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies & mypy
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install mypy types-PyYAML
+
+      - name: Run mypy Static Analysis
+        run: mypy src/ tests/
+
+  # Job 3: Security & Dependency Vulnerability Audit
+  security:
+    name: Security & Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Security Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install bandit pip-audit
+
+      - name: Run Bandit AST Security Scan
+        run: bandit -r src/ -c pyproject.toml
+
+      - name: Run Pip-Audit Dependency Vulnerability Check
+        run: pip-audit -r requirements.txt
+
+  # Job 4: Multi-OS and Multi-Python Test Matrix with Coverage Gate
+  test:
+    name: Test Matrix (${{ matrix.os }} - Python ${{ matrix.python-version }})
+    needs: [lint, typecheck, security]
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+        python-version: ["3.10", "3.11", "3.12"]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Execute Pytest with 80% Coverage Gate
+        run: python -m pytest tests/ -v --cov=src --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+
+      - name: Execute Headless Pipeline Benchmark Verification
+        run: python run_pipeline.py --seed 42 --benchmark --headless
