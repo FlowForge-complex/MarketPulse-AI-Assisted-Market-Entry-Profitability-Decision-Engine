@@ -27,7 +27,7 @@ mypy==1.11.0
 mypy-extensions==1.0.0
 narwhals==2.0.1
 numpy==2.2.1
-packaging==25.0
+packaging==26.3
 pandas==2.2.3
 pathspec==0.12.1
 Pillow==11.3.0
