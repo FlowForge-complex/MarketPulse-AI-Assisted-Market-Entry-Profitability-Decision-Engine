@@ -39,7 +39,7 @@ protobuf==6.31.1
 psycopg2-binary==2.9.9
 pyarrow==21.0.0
 pycodestyle==2.12.0
-pydeck==0.9.1
+pydeck==0.9.3
 pydantic==2.8.2
 pydantic_core==2.20.1
 pyflakes==3.2.0
