@@ -4,7 +4,9 @@
 [![Docker Build](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions/workflows/docker-build.yml/badge.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions)
 [![Release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/releases)
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![Coverage](https://img.shields.io/badge/coverage-90.4%25-brightgreen.svg)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-91.0%25-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-53%20passed-success.svg)](tests/)
+[![Contributors](https://img.shields.io/badge/contributors-2%20active-orange.svg)](#8-team--contributors)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Security: Bandit](https://img.shields.io/badge/security-bandit-green.svg)](https://github.com/PyCQA/bandit)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
@@ -117,7 +119,7 @@ pip install -e .
 
 ### Step 3: Run Full Test Suite & Coverage Gate
 ```bash
-# Executes 46 unit & integration tests with >= 80% coverage enforcement
+# Executes 53 unit & integration tests with >= 80% coverage enforcement
 python -m pytest tests/ -v --cov=src --cov-fail-under=80
 ```
 
@@ -166,7 +168,7 @@ bandit -r src/ -s B101,B311,B110
 # 5. Dependency Vulnerability Auditing
 pip-audit --local
 
-# 6. Unit & Integration Test Suite (46 tests, 90.4% coverage)
+# 6. Unit & Integration Test Suite (53 tests, 91.0% coverage)
 python -m pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=80
 ```
 
@@ -204,12 +206,12 @@ MarketPulse/
 ├── src/
 │   ├── ai/                 # Deterministic AI explanation layer & prompts
 │   ├── analytics/          # EDA, RFM segmentation, cohort retention, profitability
-│   ├── core/               # Structured logging, health check, types, configuration
+│   ├── core/               # Health checks, telemetry profiling, types, logging
 │   ├── dashboard/          # Interactive Streamlit executive dashboard
 │   ├── data_generation/    # Reproducible customer, product, and order generators
-│   ├── decision_engine/    # Multi-criteria scoring, sensitivity, ablations, pricing
+│   ├── decision_engine/    # Scoring, sensitivity, ablations, pricing, artifact export
 │   └── guesstimation/      # Bottom-up TAM sizing model
-├── tests/                  # Pytest test suite (46 tests, 90.40% coverage)
+├── tests/                  # Pytest test suite (53 tests, 91.0% coverage)
 ├── .env.example            # Sample production environment variables
 ├── .flake8                 # Flake8 style configuration
 ├── .gitattributes          # Cross-platform LF line-ending normalization
@@ -218,7 +220,7 @@ MarketPulse/
 ├── CONTRIBUTING.md         # Developer contribution guidelines
 ├── Dockerfile              # Production multi-stage container definition
 ├── docker-compose.yml      # Multi-container orchestration
-├── Pipfile.lock            # Standard dependency lockfile
+├── Pipfile.lock            # Pinned Pipfile dependency lockfile
 ├── pyproject.toml          # Unified project & tooling configuration
 ├── requirements.txt        # Runtime and development dependency declarations
 ├── requirements.lock.txt   # Pinned dependency lockfile
@@ -228,6 +230,13 @@ MarketPulse/
 
 ---
 
-## 8. License
+## 8. Team & Contributors
+
+* **[Vineesh-12](https://github.com/Vineesh-12)** — Lead Architect & Maintainer
+* **[FlowForge-complex](https://github.com/FlowForge-complex)** — Pipeline Telemetry & Export Engine Contributor
+
+---
+
+## 9. License
 
 This project is licensed under the [MIT License](LICENSE).
