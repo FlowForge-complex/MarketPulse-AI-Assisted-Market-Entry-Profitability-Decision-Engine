@@ -1,0 +1,21 @@
+# Pinned lockfile for MarketPulse reproducible environment
+# Generated for Python 3.11+
+altair==5.5.0
+bandit==1.8.3
+black==25.1.0
+click==8.1.8
+flake8==7.1.2
+isort==6.0.1
+mypy==1.15.0
+numpy==2.2.3
+pandas==2.2.3
+pip-audit==2.8.0
+plotly==6.0.0
+psycopg2-binary==2.9.10
+pydantic==2.10.6
+pytest==8.3.4
+pytest-cov==6.0.0
+python-pptx==1.0.2
+pyyaml==6.0.2
+streamlit==1.42.2
+xlsxwriter==3.2.2
