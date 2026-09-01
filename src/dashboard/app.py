@@ -104,8 +104,8 @@ st.divider()
 
 # --- Recommendation ---
 st.subheader("Strategic Recommendation Output")
-st.success("""
-**Primary Directive:** Enter **Bengaluru** first using the Medium Pricing strategy.
-* Expected break-even occurs in Month 18 under the base case.
-* Re-evaluate expansion if CAC exceeds INR 350 or organic retention drops below 35%.
-""")
+st.success(
+    "**Primary Directive:** Enter **Bengaluru** first using the Medium Pricing strategy.\n"
+    "* Expected break-even occurs in Month 18 under the base case.\n"
+    "* Re-evaluate expansion if CAC exceeds INR 350 or organic retention drops below 35%."
+)
