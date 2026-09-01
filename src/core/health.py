@@ -1,5 +1,6 @@
 """System health check and pipeline observability monitoring module."""
 
+import json
 import os
 import sys
 import time
@@ -11,9 +12,7 @@ from src.core.logging_config import get_logger
 logger = get_logger(__name__)
 
 
-def check_system_health(
-    config: Optional[AppConfig] = None,
-) -> Dict[str, Any]:
+def health_check(config: Optional[AppConfig] = None) -> Dict[str, Any]:
     """Evaluates readiness of dataset files, file permissions, and environment.
 
     Args:
@@ -77,6 +76,10 @@ def check_system_health(
     return health_report
 
 
+# Backward compatibility alias
+check_system_health = health_check
+
+
 def get_pipeline_metrics(config: Optional[AppConfig] = None) -> Dict[str, Any]:
     """Retrieves operational metrics and dataset dimensions.
 
@@ -86,9 +89,17 @@ def get_pipeline_metrics(config: Optional[AppConfig] = None) -> Dict[str, Any]:
     Returns:
         Summary metric dictionary.
     """
-    health = check_system_health(config)
+    health = health_check(config)
     return {
         "pipeline_health": health["status"],
         "response_time_ms": health["response_time_ms"],
         "python_runtime": health["system_info"]["python_version"],
     }
+
+
+if __name__ == "__main__":
+    report = health_check()
+    print(json.dumps(report, indent=2))
+    if report["status"] != "HEALTHY":
+        sys.exit(1)
+    sys.exit(0)
