@@ -1,7 +1,7 @@
 # Pinned lockfile for MarketPulse reproducible environment
 # Generated for Python 3.11+
 altair==5.5.0
-bandit==1.8.3
+bandit==1.9.4
 black==25.1.0
 click==8.1.8
 flake8==7.1.2
