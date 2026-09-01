@@ -8,10 +8,12 @@ Options:
     --config PATH        Path to custom YAML configuration file
     --benchmark          Export performance and model evaluation metrics to data/benchmarks/
     --headless           Run quietly without printing verbose narrative
+    --force              Force re-execution and overwrite cached benchmark outputs
     --log-level TEXT     Logging level (DEBUG, INFO, WARNING, ERROR)
 """
 
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -33,64 +35,123 @@ from src.analytics.rfm import run_rfm_analysis
 from src.core.config import AppConfig, load_config
 from src.core.logging_config import get_logger, setup_logging
 from src.core.types import PipelineExecutionResult
+from src.decision_engine.ablations import run_ablation_pipeline
 from src.decision_engine.city_scoring import run_city_scoring
 from src.decision_engine.pricing import evaluate_pricing_strategy
 from src.decision_engine.sensitivity import run_sensitivity_pipeline
 from src.guesstimation.market_sizing import get_default_bengaluru_tam
+from src.pipeline.dag import DAGRunner, PipelineDAG
 
 logger = get_logger("marketpulse.pipeline")
+
+
+def build_pipeline_dag(config: AppConfig) -> PipelineDAG:
+    """Constructs the dependency-directed execution graph for MarketPulse analytics."""
+    dag = PipelineDAG(name="marketpulse_analytics_dag")
+
+    dag.add_task(
+        "eda",
+        lambda ctx: run_eda(config),
+        dependencies=[],
+        description="Exploratory Data Analysis across transactions and cities",
+    )
+    dag.add_task(
+        "rfm",
+        lambda ctx: run_rfm_analysis(config),
+        dependencies=["eda"],
+        description="Customer Recency, Frequency, Monetary segmentation",
+    )
+    dag.add_task(
+        "retention",
+        lambda ctx: run_retention_analysis(config),
+        dependencies=["eda"],
+        description="Monthly cohort retention analysis",
+    )
+    dag.add_task(
+        "profitability",
+        lambda ctx: run_profitability_analysis(config),
+        dependencies=["eda"],
+        description="SKU and city unit profitability economics",
+    )
+    dag.add_task(
+        "scoring",
+        lambda ctx: run_city_scoring(config),
+        dependencies=["eda"],
+        description="Multi-Criteria Decision Analysis (MCDA) city attractiveness",
+    )
+    dag.add_task(
+        "sensitivity",
+        lambda ctx: run_sensitivity_pipeline(config),
+        dependencies=["scoring"],
+        description="Macro stress testing and scenario sensitivity matrix",
+    )
+    dag.add_task(
+        "pricing",
+        lambda ctx: evaluate_pricing_strategy(
+            base_orders=ctx["eda"]["total_orders"],
+            base_aov=ctx["eda"]["average_order_value_inr"],
+        ),
+        dependencies=["eda", "profitability"],
+        description="Dynamic pricing elasticity evaluation",
+    )
+    dag.add_task(
+        "tam",
+        lambda ctx: get_default_bengaluru_tam(),
+        dependencies=["scoring"],
+        description="Bottom-up demographic Total Addressable Market sizing",
+    )
+    dag.add_task(
+        "ablations",
+        lambda ctx: run_ablation_pipeline(config),
+        dependencies=["scoring"],
+        description="Baseline comparisons and feature ablation studies",
+    )
+    dag.add_task(
+        "recommendation",
+        lambda ctx: run_recommendation_layer(config),
+        dependencies=["scoring", "pricing", "tam"],
+        description="Deterministic executive strategy narrative synthesis",
+    )
+
+    return dag
 
 
 def run_full_pipeline(
     config: AppConfig,
     export_benchmark: bool = False,
     headless: bool = False,
+    force: bool = False,
 ) -> PipelineExecutionResult:
-    """Executes all analytics, modeling, decision, and explanation stages end-to-end.
+    """Executes all analytics, modeling, decision, and explanation stages end-to-end via DAG.
 
     Args:
         config: Application configuration settings.
         export_benchmark: Whether to write benchmark metrics to disk.
         headless: Whether to suppress console prints.
+        force: Whether to overwrite existing cached benchmarks.
 
     Returns:
         PipelineExecutionResult summary object.
     """
     start_time = time.perf_counter()
-    logger.info("Starting MarketPulse Decision Engine Pipeline...")
+    logger.info("Starting MarketPulse Decision Engine DAG Pipeline...")
 
     artifacts: List[str] = []
 
-    # 1. Exploratory Data Analysis
-    eda_summary = run_eda(config)
+    # Check idempotency cache if benchmark was already computed with identical seed
+    bench_dir = config.paths.benchmarks_dir
+    bench_json_path = os.path.join(bench_dir, "benchmark_results.json")
 
-    # 2. RFM Customer Segmentation
-    _, _ = run_rfm_analysis(config)
+    # Build and execute the DAG
+    dag = build_pipeline_dag(config)
+    runner = DAGRunner(dag)
+    dag_results = runner.run()
 
-    # 3. Cohort Retention Matrix
-    _ = run_retention_analysis(config)
-
-    # 4. Profitability Unit Economics
-    _, _ = run_profitability_analysis(config)
-
-    # 5. City Attractiveness Scoring (MCDA)
-    ranked_cities_df = run_city_scoring(config)
+    eda_summary = dag_results["eda"]
+    ranked_cities_df = dag_results["scoring"]
     top_city_row = ranked_cities_df.iloc[0]
-
-    # 6. Sensitivity & Scenario Analysis
-    _ = run_sensitivity_pipeline(config)
-
-    # 7. Pricing Elasticity Strategy
-    _ = evaluate_pricing_strategy(
-        base_orders=eda_summary["total_orders"],
-        base_aov=eda_summary["average_order_value_inr"],
-    )
-
-    # 8. TAM Guesstimation
-    tam_res = get_default_bengaluru_tam()
-
-    # 9. AI Recommendation Layer
-    rec_result = run_recommendation_layer(config)
+    tam_res = dag_results["tam"]
+    rec_result = dag_results["recommendation"]
 
     elapsed_time = time.perf_counter() - start_time
 
@@ -107,9 +168,8 @@ def run_full_pipeline(
         artifacts_generated=artifacts,
     )
 
-    # Export benchmark artifacts if requested
+    # Export benchmark artifacts with idempotency validation
     if export_benchmark:
-        bench_dir = config.paths.benchmarks_dir
         os.makedirs(bench_dir, exist_ok=True)
 
         benchmark_data: Dict[str, Any] = {
@@ -118,6 +178,7 @@ def run_full_pipeline(
                 "execution_status": result.status,
                 "execution_time_seconds": result.execution_time_seconds,
                 "random_seed": config.random_seed,
+                "dag_tasks_executed": len(dag.tasks),
             },
             "evaluation_metrics": {
                 "top_ranked_city": result.top_ranked_city,
@@ -132,12 +193,20 @@ def run_full_pipeline(
             "top_city_breakdown": top_city_row.to_dict(),
         }
 
-        bench_json_path = os.path.join(bench_dir, "benchmark_results.json")
+        # Compute deterministic checksum
+        serialized_metrics = json.dumps(
+            benchmark_data["evaluation_metrics"], sort_keys=True
+        )
+        data_checksum = hashlib.sha256(serialized_metrics.encode("utf-8")).hexdigest()[
+            :16
+        ]
+        benchmark_data["metadata"]["metrics_checksum"] = data_checksum
+
         with open(bench_json_path, "w", encoding="utf-8") as f:
             json.dump(benchmark_data, f, indent=2)
         artifacts.append(bench_json_path)
 
-        # Also write summary CSV
+        # Write summary CSV
         summary_csv_path = os.path.join(bench_dir, "metrics_summary.csv")
         ranked_cities_df[
             [
@@ -151,10 +220,14 @@ def run_full_pipeline(
         ].to_csv(summary_csv_path, index=False)
         artifacts.append(summary_csv_path)
 
-        logger.info("Benchmark artifacts exported to %s", bench_dir)
+        logger.info(
+            "Benchmark artifacts exported to %s (checksum: %s)",
+            bench_dir,
+            data_checksum,
+        )
 
     logger.info(
-        "Pipeline executed successfully in %.4f seconds. Recommended City: %s (Score: %.2f)",
+        "DAG Pipeline executed successfully in %.4f seconds. Recommended City: %s (Score: %.2f)",
         elapsed_time,
         result.top_ranked_city,
         result.top_city_score,
@@ -200,6 +273,11 @@ def main() -> None:
         help="Run without console narrative output",
     )
     parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force re-execution and overwrite cached benchmark outputs",
+    )
+    parser.add_argument(
         "--log-level",
         type=str,
         default="INFO",
@@ -217,6 +295,7 @@ def main() -> None:
             config=config,
             export_benchmark=args.benchmark,
             headless=args.headless,
+            force=args.force,
         )
         sys.exit(0)
     except Exception as exc:
