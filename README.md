@@ -2,10 +2,10 @@
 
 [![CI Pipeline](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions/workflows/ci.yml/badge.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions)
 [![Docker Build](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions/workflows/docker-build.yml/badge.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions)
-[![Release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/releases)
+[![Release](https://img.shields.io/badge/release-v1.2.0-blue.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/releases)
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![Coverage](https://img.shields.io/badge/coverage-91.4%25-brightgreen.svg)](tests/)
-[![Tests](https://img.shields.io/badge/tests-60%20passed-success.svg)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-90.7%25-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-66%20passed-success.svg)](tests/)
 [![Contributors](https://img.shields.io/badge/contributors-2%20active-orange.svg)](#8-team--contributors)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Security: Bandit](https://img.shields.io/badge/security-bandit-green.svg)](https://github.com/PyCQA/bandit)
@@ -110,16 +110,16 @@ git clone https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Pro
 cd MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine
 ```
 
-### Step 2: Install Dependencies
+### Step 2: Install Locked Dependencies
 ```bash
-pip install -r requirements.txt
+pip install -r requirements.lock
 pip install -e .
 ```
 
 ### Step 3: Run Full Test Suite & Coverage Gate
 ```bash
-# Executes 60 unit & integration tests with >= 80% coverage enforcement
-python -m pytest tests/ -v --cov=src --cov-fail-under=80
+# Executes 66 unit & integration tests with >= 90% coverage enforcement
+python -m pytest tests/ -v --cov=src --cov-fail-under=90
 ```
 
 ### Step 4: Execute Headless DAG Pipeline (Offline & Idempotent)
@@ -167,8 +167,8 @@ bandit -r src/ -s B101,B311,B110
 # 5. Dependency Vulnerability Auditing (Strict CI Gate)
 pip-audit -r requirements.txt
 
-# 6. Unit & Integration Test Suite (60 tests, 91.4% coverage)
-python -m pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=80
+# 6. Unit & Integration Test Suite (66 tests, 90.7% coverage, 90% Gate)
+python -m pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=90
 ```
 
 ### Security, Threat Model & Secrets Management Highlights
@@ -212,7 +212,7 @@ MarketPulse/
 │   ├── decision_engine/    # Scoring, sensitivity, ablations, pricing, artifact export
 │   ├── guesstimation/      # Bottom-up TAM sizing model
 │   └── pipeline/           # Directed Acyclic Graph (DAG) task engine and runner
-├── tests/                  # Pytest test suite (60 tests, 91.4% coverage)
+├── tests/                  # Pytest test suite (66 tests, 90.73% coverage, >=90% Gate)
 ├── .env.example            # Sample production environment variables
 ├── .flake8                 # Flake8 style configuration
 ├── .gitattributes          # Cross-platform LF line-ending normalization
@@ -223,7 +223,7 @@ MarketPulse/
 ├── docker-compose.yml      # Multi-container orchestration
 ├── pyproject.toml          # Unified project & tooling configuration
 ├── requirements.txt        # Runtime and development dependency declarations
-├── requirements.lock.txt   # Pinned dependency lockfile
+├── requirements.lock       # Pinned dependency lockfile
 ├── run_pipeline.py         # Headless CLI DAG pipeline runner
 └── SECURITY.md             # Security policy, threat model, and secrets management
 ```
@@ -233,7 +233,7 @@ MarketPulse/
 ## 8. Team & Contributors
 
 * **[Vineesh-12](https://github.com/Vineesh-12)** — Lead Architect & Maintainer
-* **[FlowForge-complex](https://github.com/FlowForge-complex)** — Pipeline Telemetry & DAG Orchestrator Contributor
+* **[FlowForge-complex](https://github.com/FlowForge-complex)** — Pipeline Telemetry, Health Probes & DAG Orchestrator Contributor
 
 ---
 

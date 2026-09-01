@@ -4,7 +4,7 @@ import pandas as pd
 
 from src.core.types import ScoringWeights
 from src.decision_engine.city_scoring import (
-    evaluate_city_attractiveness,
+    calculate_city_scores,
     min_max_normalize,
     run_city_scoring,
 )
@@ -76,7 +76,7 @@ def test_city_scoring_tie_break():
             },
         ]
     )
-    ranked = evaluate_city_attractiveness(mock_df)
+    ranked = calculate_city_scores(mock_df)
     assert len(ranked) == 2
     # AlphaCity has higher economic growth (8.5 vs 7.0), so it wins the tie-break
     assert ranked.iloc[0]["city"] == "AlphaCity"
