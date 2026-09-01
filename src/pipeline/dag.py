@@ -122,6 +122,7 @@ class DAGRunner:
                     res = task.func(pipeline_context)
                     task.result = res
                     results[task.task_id] = res
+                    pipeline_context[task.task_id] = res
                     task.status = TaskStatus.SUCCESS
                     success = True
                 except Exception as exc:

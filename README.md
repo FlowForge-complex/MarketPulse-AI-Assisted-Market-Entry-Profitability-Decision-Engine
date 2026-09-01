@@ -4,8 +4,8 @@
 [![Docker Build](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions/workflows/docker-build.yml/badge.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/actions)
 [![Release](https://img.shields.io/badge/release-v1.1.0-blue.svg)](https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine/releases)
 [![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12-blue.svg)](https://www.python.org/)
-[![Coverage](https://img.shields.io/badge/coverage-91.0%25-brightgreen.svg)](tests/)
-[![Tests](https://img.shields.io/badge/tests-53%20passed-success.svg)](tests/)
+[![Coverage](https://img.shields.io/badge/coverage-91.4%25-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-60%20passed-success.svg)](tests/)
 [![Contributors](https://img.shields.io/badge/contributors-2%20active-orange.svg)](#8-team--contributors)
 [![Code Style: Black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Security: Bandit](https://img.shields.io/badge/security-bandit-green.svg)](https://github.com/PyCQA/bandit)
@@ -30,7 +30,7 @@ A rapidly expanding quick-commerce and consumer delivery enterprise seeks to sca
 
 ---
 
-## 2. End-to-End Decision Architecture
+## 2. End-to-End Decision & DAG Architecture
 
 ```text
                                  MARKETPULSE ENGINE
@@ -52,8 +52,8 @@ A rapidly expanding quick-commerce and consumer delivery enterprise seeks to sca
                      └───────────────────┬───────────────────┘
                                          ↓
                      ┌───────────────────────────────────────┐
-                     │       Core Analytics & Profiling      │
-                     │  (EDA, RFM Segmentation, Cohorts)    │
+                     │   Directed Acyclic Graph (DAG) Engine │
+                     │ (Topological Task Scheduling & Retry) │
                      └───────────────────┬───────────────────┘
                                          ↓
                  ┌───────────────────────┼───────────────────────┐
@@ -110,22 +110,21 @@ git clone https://github.com/Vineesh-12/MarketPulse-AI-Assisted-Market-Entry-Pro
 cd MarketPulse-AI-Assisted-Market-Entry-Profitability-Decision-Engine
 ```
 
-### Step 2: Install Pinned Dependencies
+### Step 2: Install Dependencies
 ```bash
-# Install exact pinned dependencies from lockfile
-pip install -r requirements.lock.txt
+pip install -r requirements.txt
 pip install -e .
 ```
 
 ### Step 3: Run Full Test Suite & Coverage Gate
 ```bash
-# Executes 53 unit & integration tests with >= 80% coverage enforcement
+# Executes 60 unit & integration tests with >= 80% coverage enforcement
 python -m pytest tests/ -v --cov=src --cov-fail-under=80
 ```
 
-### Step 4: Execute Headless Decision Pipeline (Offline)
+### Step 4: Execute Headless DAG Pipeline (Offline & Idempotent)
 ```bash
-# Runs complete deterministic pipeline and exports benchmark metrics
+# Runs complete deterministic DAG pipeline and exports benchmark metrics
 python run_pipeline.py --seed 42 --benchmark --headless
 ```
 
@@ -165,14 +164,15 @@ python -m mypy --explicit-package-bases src/ tests/ run_pipeline.py
 # 4. AST Security Scanning
 bandit -r src/ -s B101,B311,B110
 
-# 5. Dependency Vulnerability Auditing
-pip-audit --local
+# 5. Dependency Vulnerability Auditing (Strict CI Gate)
+pip-audit -r requirements.txt
 
-# 6. Unit & Integration Test Suite (53 tests, 91.0% coverage)
+# 6. Unit & Integration Test Suite (60 tests, 91.4% coverage)
 python -m pytest tests/ -v --cov=src --cov-report=term-missing --cov-fail-under=80
 ```
 
-### Security & Threat Model Highlights
+### Security, Threat Model & Secrets Management Highlights
+* **Secrets Manager & Vault Integration:** Provider-agnostic `SecretsManager` (`src/core/secrets_manager.py`) supporting local `.env`, HashiCorp Vault, and AWS Secrets Manager with 90-day rotation cadence.
 * **Secret Redaction Filter:** Integrated `SecretRedactionFilter` regex stream scanner in `src/core/logging_config.py` masking all API keys and tokens with `[REDACTED]`.
 * **Pydantic Ingestion Schemas:** All incoming CSVs are validated against strict Pydantic schemas (`CityMetricsSchema`, `OrderIngestSchema`, etc.) before processing.
 * **Keyless Isolation:** Pipeline operates 100% offline using deterministic narrative synthesis when `GEMINI_API_KEY` / `OPENAI_API_KEY` are unset.
@@ -206,12 +206,13 @@ MarketPulse/
 ├── src/
 │   ├── ai/                 # Deterministic AI explanation layer & prompts
 │   ├── analytics/          # EDA, RFM segmentation, cohort retention, profitability
-│   ├── core/               # Health checks, telemetry profiling, types, logging
+│   ├── core/               # Secrets manager, health checks, telemetry, logging, types
 │   ├── dashboard/          # Interactive Streamlit executive dashboard
 │   ├── data_generation/    # Reproducible customer, product, and order generators
 │   ├── decision_engine/    # Scoring, sensitivity, ablations, pricing, artifact export
-│   └── guesstimation/      # Bottom-up TAM sizing model
-├── tests/                  # Pytest test suite (53 tests, 91.0% coverage)
+│   ├── guesstimation/      # Bottom-up TAM sizing model
+│   └── pipeline/           # Directed Acyclic Graph (DAG) task engine and runner
+├── tests/                  # Pytest test suite (60 tests, 91.4% coverage)
 ├── .env.example            # Sample production environment variables
 ├── .flake8                 # Flake8 style configuration
 ├── .gitattributes          # Cross-platform LF line-ending normalization
@@ -220,12 +221,11 @@ MarketPulse/
 ├── CONTRIBUTING.md         # Developer contribution guidelines
 ├── Dockerfile              # Production multi-stage container definition
 ├── docker-compose.yml      # Multi-container orchestration
-├── Pipfile.lock            # Pinned Pipfile dependency lockfile
 ├── pyproject.toml          # Unified project & tooling configuration
 ├── requirements.txt        # Runtime and development dependency declarations
 ├── requirements.lock.txt   # Pinned dependency lockfile
-├── run_pipeline.py         # Headless CLI pipeline runner
-└── SECURITY.md             # Security policy and formal threat model
+├── run_pipeline.py         # Headless CLI DAG pipeline runner
+└── SECURITY.md             # Security policy, threat model, and secrets management
 ```
 
 ---
@@ -233,7 +233,7 @@ MarketPulse/
 ## 8. Team & Contributors
 
 * **[Vineesh-12](https://github.com/Vineesh-12)** — Lead Architect & Maintainer
-* **[FlowForge-complex](https://github.com/FlowForge-complex)** — Pipeline Telemetry & Export Engine Contributor
+* **[FlowForge-complex](https://github.com/FlowForge-complex)** — Pipeline Telemetry & DAG Orchestrator Contributor
 
 ---
 

@@ -2,7 +2,6 @@
 
 import json
 import os
-import tempfile
 
 from run_pipeline import build_pipeline_dag, run_full_pipeline
 from src.core.config import AppConfig
@@ -49,23 +48,19 @@ def test_build_pipeline_dag():
 
 def test_pipeline_idempotency():
     """Validates that two consecutive pipeline runs with the same seed generate identical evaluation metrics."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        cfg = AppConfig()
-        cfg.paths.base_dir = os.path.abspath(
-            os.path.join(os.path.dirname(__file__), "..")
-        )
-        cfg.paths.benchmarks_dir = tmpdir
-        cfg.random_seed = 42
+    cfg = AppConfig()
+    cfg.paths.base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+    cfg.random_seed = 42
 
-        # Run 1
-        res1 = run_full_pipeline(
-            config=cfg,
-            export_benchmark=True,
-            headless=True,
-        )
-        bench1_path = os.path.join(tmpdir, "benchmark_results.json")
-        with open(bench1_path, "r", encoding="utf-8") as f:
-            data1 = json.load(f)
+    # Run 1
+    res1 = run_full_pipeline(
+        config=cfg,
+        export_benchmark=True,
+        headless=True,
+    )
+    bench1_path = os.path.join(cfg.paths.benchmarks_dir, "benchmark_results.json")
+    with open(bench1_path, "r", encoding="utf-8") as f:
+        data1 = json.load(f)
 
         # Run 2
         res2 = run_full_pipeline(

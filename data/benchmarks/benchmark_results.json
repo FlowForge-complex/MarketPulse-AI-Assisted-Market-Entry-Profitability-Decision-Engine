@@ -2,8 +2,10 @@
   "metadata": {
     "pipeline_version": "1.1.0",
     "execution_status": "SUCCESS",
-    "execution_time_seconds": 0.1325,
-    "random_seed": 42
+    "execution_time_seconds": 0.1786,
+    "random_seed": 42,
+    "dag_tasks_executed": 10,
+    "metrics_checksum": "75ffe63d5ba49a20"
   },
   "evaluation_metrics": {
     "top_ranked_city": "Bengaluru",
