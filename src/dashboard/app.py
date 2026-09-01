@@ -11,14 +11,9 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Remove the complex custom CSS to prevent dark-mode/light-mode clashes
+# Clean layout styling
 st.markdown(
-    """
-<style>
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-</style>
-""",
+    "<style>#MainMenu {visibility: hidden;} footer {visibility: hidden;}</style>",
     unsafe_allow_html=True,
 )
 
