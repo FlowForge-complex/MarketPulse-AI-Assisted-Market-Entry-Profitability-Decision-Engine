@@ -49,13 +49,24 @@ jobs:
         run: python -m mypy --explicit-package-bases src/ tests/ run_pipeline.py
 
       - name: Run Bandit AST Security Scan
-        run: bandit -r src/ -s B101,B311,B110
+        run: bandit -r src/ -s B101,B311,B110 -f json -o bandit-report.json || bandit -r src/ -s B101,B311,B110
 
       - name: Run pip-audit Dependency Scan
-        run: pip-audit --local || true
+        run: pip-audit -r requirements.txt
 
       - name: Run Pytest Test Suite with Coverage Gate (>= 80%)
-        run: python -m pytest tests/ -v --cov=src --cov-report=term-missing --cov-report=xml --cov-fail-under=80
+        run: python -m pytest tests/ -v --cov=src --cov-report=term-missing --cov-report=xml:coverage.xml --cov-fail-under=80
 
       - name: Execute Headless Decision Pipeline
         run: python run_pipeline.py --seed 42 --benchmark --headless
+
+      - name: Upload Security & Test Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: security-and-coverage-reports
+          path: |
+            coverage.xml
+            bandit-report.json
+            data/benchmarks/benchmark_results.json
+          retention-days: 7
