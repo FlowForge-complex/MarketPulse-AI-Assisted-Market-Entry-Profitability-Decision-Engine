@@ -1,9 +1,12 @@
-"""Unit tests for SecretsManager and Vault providers."""
+"""Unit tests for SecretsManager, Vault providers, and log redaction assurance."""
 
+import io
+import logging
 import os
 
 import pytest
 
+from src.core.logging_config import SecretRedactionFilter
 from src.core.secrets_manager import (
     EnvSecretsProvider,
     SecretsManager,
@@ -42,3 +45,25 @@ def test_global_singleton():
     mgr1 = get_secrets_manager()
     mgr2 = get_secrets_manager()
     assert mgr1 is mgr2
+
+
+def test_secrets_manager_never_logs_raw_secrets():
+    """Validates that log streams masking never output raw token strings."""
+    stream = io.StringIO()
+    handler = logging.StreamHandler(stream)
+    handler.addFilter(SecretRedactionFilter())
+    handler.setFormatter(logging.Formatter("%(message)s"))
+
+    test_logger = logging.getLogger("test_security_redaction")
+    test_logger.setLevel(logging.INFO)
+    test_logger.addHandler(handler)
+
+    raw_gemini_key = "AIzaSyD_EXAMPLE_SECRET_KEY_123456789"
+    raw_openai_key = "sk-proj-EXAMPLE_SECRET_TOKEN_987654321"
+
+    test_logger.info(f"Loaded credentials: {raw_gemini_key} and {raw_openai_key}")
+    output = stream.getvalue()
+
+    assert raw_gemini_key not in output
+    assert raw_openai_key not in output
+    assert "[REDACTED]" in output

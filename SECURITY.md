@@ -2,7 +2,7 @@
 
 ## 1. Executive Threat Model
 
-MarketPulse operates as an analytical decision-support engine. This threat model formally defines the security architecture, asset classifications, trust boundaries, threat vectors, key rotation policies, and automated defense controls.
+MarketPulse operates as an analytical decision-support engine. This threat model formally defines the security architecture, asset classifications, trust boundaries, threat vectors, key rotation policies, automated defense controls, and residual risks.
 
 ### 1.1 Asset Classifications & Impact of Potential Leaks
 1. **AI Provider API Keys (`GEMINI_API_KEY`, `OPENAI_API_KEY`):**
@@ -56,7 +56,7 @@ MarketPulse operates as an analytical decision-support engine. This threat model
 MarketPulse provides a provider-agnostic `SecretsManager` (`src/core/secrets_manager.py`) supporting multiple backends:
 
 1. **Environment Variables (`EnvSecretsProvider`):** Default for development and local testing.
-2. **Vault / Cloud Secrets (`VaultSecretsProvider`):** Integration for production deployments using HashiCorp Vault or AWS Secrets Manager.
+2. **Vault / Cloud Secrets (`VaultSecretsProvider`):** Integration for production deployments using HashiCorp Vault or AWS Secrets Manager with in-memory caching and rotation.
 
 ### Production Secret Manager Configuration
 To swap `.env` for a secret manager in production:
@@ -71,21 +71,38 @@ get_secrets_manager().set_provider(vault_provider)
 ```
 
 ### Key Rotation SLA
-* **Standard Key Rotation:** Every 90 days.
+* **Standard Key Rotation:** Every 90 days across all cloud provider keys and database credentials.
 * **Emergency Revocation SLA:** Revocation and secret rotation completed within 4 hours of confirmed compromise.
+
+### Secret Redaction Filter Coverage
+The `SecretRedactionFilter` in `src/core/logging_config.py` actively intercepts:
+* Google Gemini API Keys (`AIzaSy[A-Za-z0-9_-]{33}`)
+* OpenAI API Keys (`sk-[A-Za-z0-9-_]{20,}`)
+* GitHub Personal Access Tokens (`ghp_[A-Za-z0-9]{36}`)
+* Authorization Bearer Headers (`Bearer\s+[A-Za-z0-9\-._~+/]+=*`)
 
 ---
 
-## 3. Supported Versions & Patch Policy
+## 3. Known Residual Risks & Assessment
+
+| Residual Risk Vector | Impact Severity | Operational Context & Buyer Assessment |
+| :--- | :---: | :--- |
+| **Transitive Dependency Drift** | Low | `pip-audit` scans direct and pinned lockfile dependencies. Sub-dependencies without published CVEs remain subject to future upstream disclosure. |
+| **In-Memory Secret Lifetime** | Low | Process memory dumps on compromised host environments could reveal active runtime tokens prior to garbage collection. Mitigated by OS-level container isolation. |
+| **Offline Model Heuristic Divergence** | Low | Offline narrative generation relies on structured metrics templates rather than dynamic LLM inference, ensuring complete data containment at the cost of subjective nuance. |
+
+---
+
+## 4. Supported Versions & Patch Policy
 
 | Version | Supported | Security Update Cadence |
 | :--- | :---: | :--- |
-| **1.1.x** | :white_check_mark: | Active support; critical patches released within 48 hours. |
+| **1.1.x / 1.2.x** | :white_check_mark: | Active support; critical patches released within 48 hours. |
 | **1.0.x** | :x: | End of Life (Deprecated). |
 
 ---
 
-## 4. Reporting a Vulnerability
+## 5. Reporting a Vulnerability
 
 If you discover a security vulnerability, please submit a responsible disclosure report:
 
