@@ -81,12 +81,12 @@ def calculate_city_scores(
             + df["income_score"] * scoring_weights.income_level
         ).round(2)
 
-        df["rank"] = (
-            df["composite_score"].rank(ascending=False, method="min").astype(int)
-        )
-        df_ranked = df.sort_values(by="composite_score", ascending=False).reset_index(
-            drop=True
-        )
+        # Multi-level deterministic tie-break: composite_score -> economic_growth_score -> demand_score -> city
+        df_ranked = df.sort_values(
+            by=["composite_score", "economic_growth_score", "demand_score", "city"],
+            ascending=[False, False, False, True],
+        ).reset_index(drop=True)
+        df_ranked["rank"] = range(1, len(df_ranked) + 1)
 
         logger.info(
             "City scoring completed. Top ranked city: %s (Score: %.2f)",

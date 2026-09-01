@@ -1,9 +1,13 @@
-"""Unit tests for Multi-Criteria Decision Analysis (MCDA) city scoring."""
+"""Unit tests for Multi-Criteria Decision Analysis (MCDA) city scoring and tie-breaking."""
 
 import pandas as pd
 
 from src.core.types import ScoringWeights
-from src.decision_engine.city_scoring import min_max_normalize, run_city_scoring
+from src.decision_engine.city_scoring import (
+    evaluate_city_attractiveness,
+    min_max_normalize,
+    run_city_scoring,
+)
 
 
 def test_min_max_normalize():
@@ -44,3 +48,38 @@ def test_custom_weights_effect():
     )
     ranked_growth = run_city_scoring(weights=weights_growth)
     assert ranked_growth.iloc[0]["rank"] == 1
+
+
+def test_city_scoring_tie_break():
+    """Validates deterministic tie-breaking when two candidate cities have identical composite scores."""
+    mock_df = pd.DataFrame(
+        [
+            {
+                "city": "AlphaCity",
+                "population": 1000000,
+                "population_density": 5000,
+                "economic_growth": 8.5,
+                "ecommerce_adoption": 0.20,
+                "internet_penetration": 0.70,
+                "mpce": 5000,
+                "income_proxy": 80000,
+            },
+            {
+                "city": "BetaCity",
+                "population": 1000000,
+                "population_density": 5000,
+                "economic_growth": 7.0,
+                "ecommerce_adoption": 0.20,
+                "internet_penetration": 0.70,
+                "mpce": 5000,
+                "income_proxy": 80000,
+            },
+        ]
+    )
+    ranked = evaluate_city_attractiveness(mock_df)
+    assert len(ranked) == 2
+    # AlphaCity has higher economic growth (8.5 vs 7.0), so it wins the tie-break
+    assert ranked.iloc[0]["city"] == "AlphaCity"
+    assert ranked.iloc[0]["rank"] == 1
+    assert ranked.iloc[1]["city"] == "BetaCity"
+    assert ranked.iloc[1]["rank"] == 2
